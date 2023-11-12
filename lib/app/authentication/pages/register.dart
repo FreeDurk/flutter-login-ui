@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_bud/app/authentication/cubit/auth_cubit.dart';
 import 'package:my_bud/app/authentication/model/registration_model.dart';
 import 'package:my_bud/app/utils/button.dart';
 import 'package:my_bud/app/authentication/pages/utils/header.dart';
@@ -19,7 +17,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  final AuthRepository authRepo = AuthRepository();
   @override
   void dispose() {
     nameController.dispose();
@@ -30,101 +28,81 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: RepositoryProvider(
-          create: (context) => AuthRepository(),
-          child: BlocProvider(
-            create: (context) => AuthCubit(
-              RepositoryProvider.of<AuthRepository>(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Header(title: "Sign Up"),
+            const SizedBox(
+              height: 30,
             ),
-            child: BlocBuilder<AuthCubit, AuthState>(
-              builder: (context, state) {
-                if (state is RegistrationInProgresState) {
-                  print("REGISTRATION IN PROGRESS");
-                }
-                if (state is RegistrationSuccessState) {
-                  Navigator.pop(context);
-                }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Header(title: "Sign Up"),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 40),
-                      child: InputFields(
-                        controller: nameController,
-                        title: "Name",
-                        placeholder: "Enter your name.",
-                        isPassword: false,
-                        onChanged: (val) {},
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 40),
-                      child: InputFields(
-                        controller: emailController,
-                        title: "Email",
-                        placeholder: "Enter your emaill address.",
-                        isPassword: false,
-                        onChanged: (val) {},
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 40),
-                      child: InputFields(
-                        controller: passwordController,
-                        title: "Password",
-                        placeholder: "Enter your password.",
-                        isPassword: true,
-                        onChanged: (val) {},
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 40),
-                      child: InputFields(
-                        controller: passwordController,
-                        title: "Confirm Password",
-                        placeholder: "Confirm your password",
-                        isPassword: true,
-                        onChanged: (val) {},
-                      ),
-                    ),
-                    AppButton(
-                      text: "Sign up",
-                      onTap: () {
-                        RegistrationModel registrationModel = RegistrationModel(
-                          name: nameController.text,
-                          email: emailController.text,
-                          password: passwordController.text,
-                        );
-                        context.read<AuthCubit>().registration(
-                              context,
-                              registrationModel,
-                            );
-                      },
-                    ),
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "Already have an account? Sign in.",
-                          style: TextStyle(color: blkOpacity),
-                        ),
-                      ),
-                    )
-                  ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+              child: InputFields(
+                controller: nameController,
+                title: "Name",
+                placeholder: "Enter your name.",
+                isPassword: false,
+                onChanged: (val) {},
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+              child: InputFields(
+                controller: emailController,
+                title: "Email",
+                placeholder: "Enter your emaill address.",
+                isPassword: false,
+                onChanged: (val) {},
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+              child: InputFields(
+                controller: passwordController,
+                title: "Password",
+                placeholder: "Enter your password.",
+                isPassword: true,
+                onChanged: (val) {},
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+              child: InputFields(
+                controller: passwordController,
+                title: "Confirm Password",
+                placeholder: "Confirm your password",
+                isPassword: true,
+                onChanged: (val) {},
+              ),
+            ),
+            AppButton(
+              text: "Sign up",
+              onTap: () async {
+                RegistrationModel registrationModel = RegistrationModel(
+                  name: nameController.text,
+                  email: emailController.text,
+                  password: passwordController.text,
                 );
+                // context.read<AuthCubit>().registration(
+                //       context,
+                //       registrationModel,
+                //     );
+
+                await authRepo.registration(registrationModel);
               },
             ),
-          ),
+            Center(
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Already have an account? Sign in.",
+                  style: TextStyle(color: blkOpacity),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
