@@ -1,22 +1,45 @@
-import 'package:http/http.dart';
+// ignore_for_file: avoid_print
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_bud/app/authentication/model/auth_model.dart';
 import 'package:my_bud/app/authentication/model/registration_model.dart';
 
 class AuthRepository {
-  String url = 'http://localhost:3000';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future registration(RegistrationModel registerModel) async {
-    Response response = await post(
-      Uri.parse('$url/users'),
-      body: {
-        "firstname": registerModel.name,
-        "lastname": "Amaba",
-        "username": "Durrk",
-        "mobile_number": "09196114506",
-        "email": registerModel.email,
-        "password": registerModel.password
-      },
-    );
+  User? get currentUser => _auth.currentUser;
 
-    return response.body;
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  Future<User?> authenticate(AuthModel auth) async {
+    try {
+      final result = await _auth.signInWithEmailAndPassword(
+        email: auth.email,
+        password: auth.password,
+      );
+      return result.user;
+    } on FirebaseException catch (e) {
+      print(e.message.toString());
+    }
+    return null;
+  }
+
+  Future<void> registration(RegistrationModel registrationModel) async {
+    try {
+      final response = await _auth.createUserWithEmailAndPassword(
+        email: registrationModel.email,
+        password: registrationModel.password,
+      );
+
+      if (response.user != null) {
+        // User user = response.user!;
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<void> logout() async {
+    await _auth.signOut();
   }
 }

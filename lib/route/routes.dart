@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:my_bud/app/authentication/pages/login.dart';
 import 'package:my_bud/app/authentication/pages/register.dart';
+import 'package:my_bud/app/dashboard/dashboard.dart';
 
 class GenerateRoute {
   static Route<dynamic> route(RouteSettings settings) {
-    final args = settings.arguments;
+    // final args = settings.arguments;
 
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (context) => const LoginPage());
       case '/register':
         return MaterialPageRoute(builder: (context) => const Register());
-      case '/dashboard':
-      // return MaterialPageRoute(builder: (context) => const Dashboard());
+      // case '/dashboard':
+      //   return MaterialPageRoute(builder: (context) => Dashboard());
 
       default:
         return routeError();
