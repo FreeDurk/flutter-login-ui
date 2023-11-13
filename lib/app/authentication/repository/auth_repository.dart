@@ -9,6 +9,8 @@ class AuthRepository {
 
   User? get currentUser => _auth.currentUser;
 
+  Stream<User?> get userChanges => _auth.userChanges();
+
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<User?> authenticate(AuthModel auth) async {
